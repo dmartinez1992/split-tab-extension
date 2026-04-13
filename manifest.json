@@ -13,6 +13,14 @@
     },
     "default_title": "Split Tabs Side by Side"
   },
+  "commands": {
+    "split-tabs": {
+      "suggested_key": {
+        "default": "Alt+X"
+      },
+      "description": "Split tabs into left and right windows"
+    }
+  },
   "background": {
     "scripts": ["background.js"]
   },

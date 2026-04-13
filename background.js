@@ -1,6 +1,6 @@
 // background.js — Tab Split View Extension
 
-browser.browserAction.onClicked.addListener(async () => {
+async function splitTabs() {
   try {
     // Get the current window
     const currentWindow = await browser.windows.getCurrent();
@@ -59,5 +59,15 @@ browser.browserAction.onClicked.addListener(async () => {
 
   } catch (err) {
     console.error("Tab Split View error:", err);
+  }
+}
+
+// Trigger via toolbar button click
+browser.browserAction.onClicked.addListener(splitTabs);
+
+// Trigger via Option+X keyboard shortcut
+browser.commands.onCommand.addListener((command) => {
+  if (command === "split-tabs") {
+    splitTabs();
   }
 });
