@@ -2,14 +2,13 @@
 
 browser.browserAction.onClicked.addListener(async () => {
   try {
-    // Get the current window info (to read screen width/height)
+    // Get the current window
     const currentWindow = await browser.windows.getCurrent();
 
     // Get all tabs in the current window
     const tabs = await browser.tabs.query({ windowId: currentWindow.id });
 
     if (tabs.length < 2) {
-      // Not enough tabs — notify the user
       browser.notifications.create({
         type: "basic",
         iconUrl: "icons/icon48.png",
@@ -19,43 +18,43 @@ browser.browserAction.onClicked.addListener(async () => {
       return;
     }
 
-    // Find the active (current) tab
+    // Identify the active tab and all other tabs
     const activeTab = tabs.find(t => t.active);
-
-    // Find the most recently used other tab (the one just before the active tab)
     const otherTabs = tabs.filter(t => t.id !== activeTab.id);
-    const otherTab = otherTabs[otherTabs.length - 1];
 
-    // Use screen size from the current window position + dimensions
-    // We'll use the full screen width by reading the window's screen coords
     const screenWidth = window.screen.width || 2560;
     const screenHeight = window.screen.height || 1440;
-
     const halfWidth = Math.floor(screenWidth / 2);
-    const top = 0;
-    const height = screenHeight;
 
-    // Move the OTHER tab to a NEW window on the LEFT half
+    // Create the LEFT window using the first "other" tab
     const leftWindow = await browser.windows.create({
-      tabId: otherTab.id,
+      tabId: otherTabs[0].id,
       left: 0,
-      top: top,
+      top: 0,
       width: halfWidth,
-      height: height,
+      height: screenHeight,
       type: "normal"
     });
 
-    // Move the ACTIVE (current) tab to a NEW window on the RIGHT half
+    // Move any remaining "other" tabs into the left window
+    for (let i = 1; i < otherTabs.length; i++) {
+      await browser.tabs.move(otherTabs[i].id, {
+        windowId: leftWindow.id,
+        index: -1  // append to end
+      });
+    }
+
+    // Create the RIGHT window with the active tab
     const rightWindow = await browser.windows.create({
       tabId: activeTab.id,
       left: halfWidth,
-      top: top,
+      top: 0,
       width: halfWidth,
-      height: height,
+      height: screenHeight,
       type: "normal"
     });
 
-    // Focus the right window (current tab)
+    // Focus the right window
     await browser.windows.update(rightWindow.id, { focused: true });
 
   } catch (err) {
