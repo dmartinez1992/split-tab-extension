@@ -1,0 +1,22 @@
+{
+  "manifest_version": 2,
+  "name": "Tab Split View",
+  "version": "1.0",
+  "description": "Split two tabs side by side — current tab on the right, previous tab on the left.",
+  "permissions": [
+    "tabs",
+    "windows"
+  ],
+  "browser_action": {
+    "default_icon": {
+      "48": "icons/icon48.png"
+    },
+    "default_title": "Split Tabs Side by Side"
+  },
+  "background": {
+    "scripts": ["background.js"]
+  },
+  "icons": {
+    "48": "icons/icon48.png"
+  }
+}
